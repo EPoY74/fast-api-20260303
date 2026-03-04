@@ -31,6 +31,10 @@ class TaskDB(TaskBase):
     id: int
 
 
+class TaskOut(TaskBase):
+    id: int
+
+
 # READ Чтение всех заданий
 @app.get("/tasks")
 def get_tasks(skip: int = 0, limit: int = 10):
