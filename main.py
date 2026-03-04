@@ -1,18 +1,20 @@
 from __future__ import annotations
 
+from unittest.mock import Base
+
 from fastapi import FastAPI
 from pydantic import BaseModel, ConfigDict, Field
 
 app = FastAPI()
 
-fake_db: list[dict[str, TaskDB]] = []
+fake_db: list[TaskDB] = []
 
 
 class TaskBase(BaseModel):
     """Класс для работы с todo записью"""
 
     # Запрещаю создание лишних полей
-    # При неправильном поле выдастся ошибка, а
+    # При неправильном поле выдастся ошибка,а
     # не упадет приложение
     model_config = ConfigDict(extra="forbid")
 
@@ -27,11 +29,11 @@ class TaskBase(BaseModel):
 
 
 class TaskDB(TaskBase):
-    id: int
+    task_id: int
 
 
 class TaskOut(TaskBase):
-    id: int
+    task_id: int
 
 
 # READ Чтение всех заданий
@@ -41,23 +43,33 @@ def get_tasks(skip: int = 0, limit: int = 10):
 
 
 #  CREATE: создаю новую задачу
-@app.post("/tasks")
-def creat_task(task: Task):
-    task_for_add = task.model_dump()
-    task_for_add["id"] = len(fake_db) + 1
+@app.post("/tasks", response_model=TaskOut)
+def creat_task(task: TaskBase) -> TaskOut:
+    task_for_add = TaskDB(task_id=len(fake_db) + 1, **task.model_dump())
+    # task_for_add. = int(len(fake_db) + 1)
     fake_db.append(task_for_add)
+    ret = TaskOut(**task_for_add.model_dump())
 
-    return {"message": "задача успешно создана", "task": task}
+    return ret
 
 
 @app.get("/")
-def read_root():
-    return {"message": "Прграмма для хранения задач."}
+def read_root() -> TaskOut:
+    return TaskOut(
+        title="Напоминалка для задач",
+        description="Приложение для сохранения текущих задач",
+        is_completed=True,
+        task_id=0,
+    )
 
 
-@app.get("/tasks/{task_id}")
-def get_task(task_id: int):
-    mached = [task for task in fake_db if task.get("id") == task_id]
+@app.get("/tasks/{task_id}", response_model=list[TaskOut])
+def get_task(task_id: int) -> list[TaskOut]:
+    mached = [
+        TaskOut(**task.model_dump())
+        for task in fake_db
+        if task.task_id == task_id
+    ]
     return mached
 
 
