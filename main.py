@@ -13,7 +13,7 @@ class Task(BaseModel):
 
     title: str  # Заголовок задачи
     description: str  # Описание задачи
-    is_complited: bool  # Факт выполнения задачи
+    is_completed: bool  # Факт выполнения задачи
 
 
 # READ Чтение всех заданий
