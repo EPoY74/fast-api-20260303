@@ -1,7 +1,16 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 
 app = FastAPI()
+
+class Task(BaseModel):
+    """Класс для работы с todo записью
+    """
+    title: str   # Заголовок задачи
+    description: str  # Описание задачи
+    is_complited: bool   # Факт выполнения задачи
+
 
 @app.get("/")
 def read_root():
