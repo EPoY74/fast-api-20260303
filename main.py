@@ -26,7 +26,7 @@ def creat_task(task: Task):
 
 @app.get("/")
 def read_root():
-    return {"message": "Привет!"}
+    return {"message": "Прграмма для хранения задач."}
 
 
 @app.get("/tasks/{task_id}")
