@@ -1,19 +1,30 @@
 from __future__ import annotations
+from dataclasses import field
 
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 app = FastAPI()
 
 fake_db: list[dict[str, Task]] = []
 
 
-class Task(BaseModel):
+class TaskBase(BaseModel):
     """Класс для работы с todo записью"""
 
-    title: str  # Заголовок задачи
-    description: str  # Описание задачи
-    is_completed: bool  # Факт выполнения задачи
+    # Запрещаю создание лишних полей
+    # При неправильном поле выдастся ошибка, а
+    # не упадет приложение
+    model_config = ConfigDict(extra="forbid")
+
+    # Заголовок задачи
+    title: str | None = Field(min_length=1, max_length=200)
+
+    # Описание задачи
+    description: str | None = Field(min_length=1, max_length=2000)
+
+    # Факт выполнения задачи
+    is_completed: bool = False
 
 
 # READ Чтение всех заданий
