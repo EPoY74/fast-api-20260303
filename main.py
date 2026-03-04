@@ -1,12 +1,11 @@
 from __future__ import annotations
-from dataclasses import field
 
 from fastapi import FastAPI
 from pydantic import BaseModel, ConfigDict, Field
 
 app = FastAPI()
 
-fake_db: list[dict[str, Task]] = []
+fake_db: list[dict[str, TaskDB]] = []
 
 
 class TaskBase(BaseModel):
