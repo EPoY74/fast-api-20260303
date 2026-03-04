@@ -3,6 +3,8 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+fake_db = []
+
 
 class Task(BaseModel):
     """Класс для работы с todo записью"""
@@ -12,9 +14,13 @@ class Task(BaseModel):
     is_complited: bool  # Факт выполнения задачи
 
 
+#  CREATE: создаю новую задачу
 @app.post("/tasks")
 def creat_task(task: Task):
-    # Тут что-то делаем
+    task_for_add = task.model_dump()
+    task_for_add["id"] = len(fake_db) + 1
+    fake_db.append(task_for_add)
+
     return {"message": "задача успешно создана", "task": task}
 
 
